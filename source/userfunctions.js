@@ -754,7 +754,7 @@ findPath = function(sourceName, destName) {
     } catch(e) { return { error: e.toString() }; }
 }
 
-getUnusedPorts = function(deviceName) {
+getNetworkSegments = function() {
     try {
         var device = ipc.network().getDevice(deviceName);
         if (!device) return { error: "Device not found: " + deviceName };
@@ -2067,10 +2067,6 @@ traceroute = function(sourceDevice, destIp) {
     } catch(e) { return { success: false, error: e.toString() }; }
 }
 
-runPingTest = function(sourceDevice, destIp, count) {
-    return ping(sourceDevice, destIp, count || 4);
-}
-
 testNetworkConnectivity = function() {
     try {
         var deviceCount = ipc.network().getDeviceCount();
@@ -2780,34 +2776,6 @@ getAllServers = function() {
         }
         
         return { count: servers.length, servers: servers };
-    } catch(e) { return { error: e.toString() }; }
-}
-
-getDeviceNeighbors = function(deviceName) {
-    try {
-        var workspace = ipc.appWindow().getActiveWorkspace().getLogicalWorkspace();
-        var linkObjects = workspace.getLinks();
-        var neighbors = [];
-        
-        for (var i = 0; i < linkObjects.length; i++) {
-            var lnk = linkObjects[i];
-            
-            if (lnk.getDevice1Name() === deviceName) {
-                neighbors.push({
-                    device: lnk.getDevice2Name(),
-                    localPort: lnk.getInterface1Name(),
-                    remotePort: lnk.getInterface2Name()
-                });
-            } else if (lnk.getDevice2Name() === deviceName) {
-                neighbors.push({
-                    device: lnk.getDevice1Name(),
-                    localPort: lnk.getInterface2Name(),
-                    remotePort: lnk.getInterface1Name()
-                });
-            }
-        }
-        
-        return { device: deviceName, neighborCount: neighbors.length, neighbors: neighbors };
     } catch(e) { return { error: e.toString() }; }
 }
 
